@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import butterknife.ButterKnife;
+
 
 public abstract class BaseMvpActivity<P extends BasePresenter> extends AppCompatActivity implements BaseView {
     private P mPresenter;
@@ -14,7 +16,8 @@ public abstract class BaseMvpActivity<P extends BasePresenter> extends AppCompat
         super.onCreate(savedInstanceState);
 
         setContentView(getActivityLayoutId());
-        mPresenter=getPresenter();
+        ButterKnife.bind(this);
+        mPresenter = createPresenter();
         mPresenter.attach(this);
         initData();
         initView();
@@ -24,16 +27,19 @@ public abstract class BaseMvpActivity<P extends BasePresenter> extends AppCompat
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        getPresenter().detach();
+        createPresenter().detach();
     }
 
     protected abstract void initView();
 
     protected abstract void initData();
 
-    protected abstract P getPresenter();
+    protected abstract P createPresenter();
 
     protected abstract int getActivityLayoutId();
 
 
+    protected P getPresenter() {
+        return mPresenter;
+    }
 }
