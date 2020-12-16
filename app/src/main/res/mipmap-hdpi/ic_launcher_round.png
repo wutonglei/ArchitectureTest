@@ -1,0 +1,116 @@
+package com.example.notificationtest;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+
+import android.annotation.TargetApi;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
+/**
+ * 疑问 channelId起到的作用是什么
+ * <p>
+ * NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+ * channel.setBypassDnd(true); //设置绕过免打扰模式
+ * channel.canBypassDnd(); //检测是否绕过免打扰模式
+ * channel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);//设置在锁屏界面上显示这条通知
+ * channel.setDescription("description of this notification");
+ * channel.setLightColor(Color.GREEN);
+ * channel.setName("name of this notification");
+ * channel.setShowBadge(true);
+ * channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+ * channel.enableVibration(true);
+ * getNotificationManager().createNotificationChannel(channel);
+ * <p>
+ * 作者：方_f666
+ * 链接：https://www.jianshu.com/p/d2ef361cedfe
+ * 来源：简书
+ * 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+ */
+public class MainActivity extends AppCompatActivity {
+    private static final String CHANNEL_ID = "chat";
+
+    /**
+     * 状态栏和抽屉式通知栏
+     * 提醒式通知  短暂地显示在浮动窗口
+     * 锁定屏幕
+     * 应用图标的标志
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String channelId = "chat";
+            String channelName = "聊天消息";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            createNotificationChannel(channelId, channelName);
+
+            channelId = "subscribe";
+            channelName = "订阅消息";
+            importance = NotificationManager.IMPORTANCE_DEFAULT;
+            createNotificationChannel(channelId, channelName);
+        }
+
+        mShow7.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                show7();
+            }
+        });
+
+        mShow8.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                show78();
+            }
+        });
+
+        mShow_long.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+
+    }
+
+    /**
+     * 必须先通过向 createNotificationChannel() 传递 NotificationChannel 的实例在系统中注册应用的通知渠道
+     * ，然后才能在 Android 8.0 及更高版本上提供通知。因此以下代码会被 SDK_INT 版本上的条件阻止：
+     * 但您还必须使用 setPriority() 设置优先级，才能支持 Android 7.1 和更低版本（如上所示）。
+     * 疑问 是注册了全局的还是 什么意思
+     */
+    @TargetApi(Build.VERSION_CODES.O)
+    private void createNotificationChannel(String channelId, String name) {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    public void show7() {
+        Intent intent = new Intent(MainActivity.this, MainActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Notification notification = new NotificationCompat.Builder(MainActivity.this)
+                .setContentTitle("这是测试通知标题")  //设置标题
+                .setContentText("这是测�
